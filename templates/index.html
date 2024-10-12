@@ -4,16 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Appwrite Auth</title>
+    <title>Home</title>
 </head>
 
 <body>
-    {% if user %}
-    <h1>Welcome, {{ user }}</h1>
-    <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-    <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('signup') }}">Sign Up</a>
-    {% endif %}
+    <h1>Welcome to the Flask Appwrite Authentication System</h1>
+    <a href="/login">Login</a> | <a href="/register">Register</a>
 </body>
 
 </html>

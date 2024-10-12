@@ -1,66 +1,57 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from appwrite.client import Client
-from appwrite.services.account import Account
-from creds import API_ENDPOINT,APPWRITE_API_KEY,PROJECT_ID
-import os
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask_pymongo import PyMongo
+from werkzeug.security import generate_password_hash, check_password_hash
+from creds import MONGO_URI
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+app.config['MONGO_URI'] = MONGO_URI
 
-# Appwrite Client Setup
-client = Client()
-client.set_endpoint(API_ENDPOINT)  # Your Appwrite endpoint
-client.set_project(PROJECT_ID)  # Your project ID
-client.set_key(APPWRITE_API_KEY)  # Your API key
+mongo = PyMongo(app)
 
-# Account Service
-account = Account(client)
+# Render register page
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        users = mongo.db.users
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
 
-@app.route('/')
-def index():
-    user = None
-    if 'user' in session:
-        user = session['user']
-    return render_template('index.html', user=user)
+        if users.find_one({'username': username}):
+            return 'Username already exists!'
 
+        hashed_password = generate_password_hash(password)
+        users.insert_one({
+            'username': username,
+            'email': email,
+            'password': hashed_password
+        })
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+# Render login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        users = mongo.db.users
+        username = request.form['username']
         password = request.form['password']
-        try:
-            session_data = account.create_session(email, password)
-            session['user'] = session_data['email']  # Store the user session
-            flash('Login successful!', 'success')
-            return redirect(url_for('index'))
-        except Exception as e:
-            flash(f'Login failed: {str(e)}', 'danger')
-            return redirect(url_for('login'))
+
+        user = users.find_one({'username': username})
+
+        if user and check_password_hash(user['password'], password):
+            session['user'] = str(user['_id'])
+            return 'Login successful!'
+        else:
+            return 'Invalid username or password!'
     return render_template('login.html')
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        try:
-            account.create(name, email, password)
-            flash('Sign up successful! Please log in.', 'success')
-            return redirect(url_for('login'))
-        except Exception as e:
-            flash(f'Signup failed: {str(e)}', 'danger')
-            return redirect(url_for('signup'))
-    return render_template('signup.html')
-
-@app.route('/logout')
+# Logout route
+@app.route('/logout', methods=['POST'])
 def logout():
-    try:
-        session.pop('user', None)  # Remove the user from session
-        flash('Logged out successfully!', 'success')
-    except Exception as e:
-        flash(f'Logout failed: {str(e)}', 'danger')
-    return redirect(url_for('index'))
+    session.pop('user', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
