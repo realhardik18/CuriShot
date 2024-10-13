@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Curishot</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
@@ -16,10 +17,23 @@
             <ul class="flex space-x-4">
                 <li><a href="/" class="hover:text-blue-400">Home</a></li>
                 <li><a href="/dashboard" class="hover:text-blue-400">Dashboard</a></li>
-                <li><a href="/logout" class="hover:text-blue-400">Logout</a></li>
             </ul>
         </div>
     </nav>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="fixed top-15 left-0 w-full z-50">
+        {% for category, message in messages %}
+        <div
+            class="flex justify-between items-center p-4 mb-4 text-white {{ 'bg-red-600' if category == 'danger' else 'bg-green-600' }} relative">
+            <p>{{ message }}</p>
+            <button class="ml-4 text-white hover:text-gray-200"
+                onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
 
     <div class="container mx-auto mt-10">
         {% block content %}{% endblock %}

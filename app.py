@@ -5,27 +5,25 @@ from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
-#from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
+from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
 import bson
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-#app.config['MONGO_URI'] = MONGO_URI
-app.config['MONGO_URI'] = os.getenv('MONGO_URI')
+app.config['MONGO_URI'] = MONGO_URI
+#app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 PINATA_UNPIN_URL = 'https://api.pinata.cloud/pinning/unpin/'
 
-try:
-    mongo = PyMongo(app)
-except Exception as e:
-    print(f"Error connecting to MongoDB: {e}")
+
+mongo = PyMongo(app)    
 
 def unpin_file_from_pinata(ipfs_hash):
     # Set the headers with the Pinata API key and secret
     headers = {
-        #'pinata_api_key': PINATA_API_KEY,
-        #'pinata_secret_api_key': PINATA_SECRET_API_KEY
-        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
-        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
+        'pinata_api_key': PINATA_API_KEY,
+        'pinata_secret_api_key': PINATA_SECRET_API_KEY
+        #'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
+        #'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
     
     # Make the unpin request
@@ -39,10 +37,10 @@ def unpin_file_from_pinata(ipfs_hash):
 def upload_to_pinata(filepath):
     url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
     headers = {
-        #'pinata_api_key': PINATA_API_KEY,
-        #'pinata_secret_api_key': PINATA_SECRET_API_KEY
-        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
-        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
+        'pinata_api_key': PINATA_API_KEY,
+        'pinata_secret_api_key': PINATA_SECRET_API_KEY
+        #'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
+        #'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
     with open(filepath, "rb") as file:
         files = {
@@ -69,7 +67,8 @@ def login():
             session['username'] = username  # Store username in session
             return redirect(url_for('dashboard'))  # Redirect to dashboard
         else:
-            return 'Invalid username or password!'
+            flash('Invalid username or password!',"danger")
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 # Render register page
@@ -118,7 +117,7 @@ def dashboard():
                     flash('Tag added successfully!', 'success')
 
             # Handle file upload and tag selection
-            if 'file' in request.files and request.files['file']:
+            if 'file' in request.files and request.files['file']:                
                 file = request.files['file']
                 filename = secure_filename(file.filename)
                 filepath = os.path.join("uploads", filename)
@@ -140,7 +139,7 @@ def dashboard():
 
                 # Delete file from local storage
                 os.remove(filepath)
-
+                flash('File uploaded succsessfully!','succsess')
                 return redirect(url_for('dashboard'))
 
         # Fetch user's tags from MongoDB
@@ -205,6 +204,7 @@ def delete_file(file_id):
         mongo.db.files.delete_one({"_id": bson.ObjectId(file_id)})
         
         # Redirect back to the dashboard
+        flash('File deleted','succsess')
         return redirect(url_for('dashboard'))
         #return 'hello'
     
