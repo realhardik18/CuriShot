@@ -6,7 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import requests
-from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
+#from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
 import bson
 
 app = Flask(__name__)
