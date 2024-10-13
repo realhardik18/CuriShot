@@ -11,7 +11,7 @@ import bson
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-app.config['MONGO_URI'] = MONGO_URI
+#app.config['MONGO_URI'] = MONGO_URI
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 PINATA_UNPIN_URL = 'https://api.pinata.cloud/pinning/unpin/'
 
