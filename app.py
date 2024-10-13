@@ -214,4 +214,5 @@ def delete_file(file_id):
 if __name__ == '__main__':
     if not os.path.exists('uploads'):
         os.makedirs('uploads')
+    print(os.listdir())
     app.run(debug=True)
