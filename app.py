@@ -90,7 +90,7 @@ def register():
             'email': email,
             'password': hashed_password
         })
-
+        flash('Account created! Kindly Login!','success')
         return redirect(url_for('login'))
     return render_template('register.html')
 
