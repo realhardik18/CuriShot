@@ -198,14 +198,21 @@ def delete_file(file_id):
     file_data = mongo.db.files.find_one({"_id": bson.ObjectId(file_id)})
     
     if file_data:        
+        # Debug: Print the file_data structure to inspect the IPFS hash
+        print("File Data:", file_data)
+
         # Get the Pinata IPFS hash of the file
         ipfs_hash = file_data.get('ipfs_hash')
-        ipfs_hash=ipfs_hash['IpfsHash']
-        #print(ipfs_hash,type(ipfs_hash))
-        
+
         # Debug: Check if ipfs_hash is valid
+        if isinstance(ipfs_hash, dict):
+            ipfs_hash = ipfs_hash.get('IpfsHash')
+        
+        print("IPFS Hash:", ipfs_hash)  # Debug line to print IPFS hash
+        
+        # Check if ipfs_hash is valid
         if not ipfs_hash:
-            return f"Error: No IPFS hash found for file with id {file_id}"
+            return f"Error: No IPFS hash found for file with id {file_id}", 400
         
         # Unpin file from Pinata
         unpin_file_from_pinata(ipfs_hash)
@@ -213,12 +220,12 @@ def delete_file(file_id):
         # Delete the file from MongoDB
         mongo.db.files.delete_one({"_id": bson.ObjectId(file_id)})
         
-        # Redirect back to the dashboard
-        flash('File deleted','succsess')
+        # Flash success message and redirect
+        flash('File deleted successfully', 'success')
         return redirect(url_for('dashboard'))
-        #return 'hello'
-    
+
     return 'File not found', 404
+
 
 
 if __name__ == '__main__':

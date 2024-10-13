@@ -88,15 +88,22 @@
     <div id="tagsSection" class="hidden mb-8">
         <h3 class="text-xl font-semibold mb-4">Add New / Delete Tags</h3>
         <!-- Form to add a new tag -->
-        <form id="newTagForm" action="/dashboard" method="POST" class="space-y-4">
-            <input type="text" name="new_tag" placeholder="New Tag Name"
-                class="block w-full text-gray-300 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <input type="color" name="tag_color"
-                class="block w-full text-gray-300 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <form method="POST" action="{{ url_for('dashboard') }}" class="space-y-4">
+            <div class="flex items-center space-x-4">
+                <label for="new_tag" class="block text-sm font-medium text-gray-700">Add New Tag:</label>
+                <input type="text" id="new_tag" name="new_tag" placeholder="Tag name"
+                    class="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                    required />
+
+                <!-- Color Picker -->
+                <input type="color" id="tag_color" name="tag_color" value="#ff0000"
+                    class="w-12 h-12 border rounded-full cursor-pointer" />
+            </div>
 
             <button type="submit"
-                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded mt-4">Add
-                Tag</button>
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Add Tag
+            </button>
         </form>
         <div class="mt-4">
             <h4 class="text-gray-400 mb-2">Existing Tags:</h4>
