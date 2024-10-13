@@ -186,8 +186,8 @@ def delete_file(file_id):
     if file_data:        
         # Get the Pinata IPFS hash of the file
         ipfs_hash = file_data.get('ipfs_hash')
-        ipfs_hash=str(ipfs_hash['IpfsHash'])
-        print(ipfs_hash,type(ipfs_hash))
+        ipfs_hash=ipfs_hash['IpfsHash']
+        #print(ipfs_hash,type(ipfs_hash))
         
         # Debug: Check if ipfs_hash is valid
         if not ipfs_hash:
@@ -201,7 +201,7 @@ def delete_file(file_id):
         
         # Redirect back to the dashboard
         return redirect(url_for('dashboard'))
-        #return 
+        #return 'hello'
     
     return 'File not found', 404
 

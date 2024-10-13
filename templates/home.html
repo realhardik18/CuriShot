@@ -1,14 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gray-900 text-white min-h-screen flex flex-col justify-center items-center text-center px-6 py-12">
+    <h1 class="text-5xl font-extrabold leading-tight mb-4">Curishot</h1>
+    <p class="text-lg mb-6">A simple, minimalistic file storage and transfer system for college students to share
+        screenshots, code files, and more with ease using Pinata Cloud.</p>
 
-<body>
-    <h1>welcome to curishot</h1>
-</body>
+    <!-- Call to Action Buttons -->
+    <div class="flex space-x-4">
+        <a href="#getStarted"
+            class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-6 rounded-full text-lg font-semibold">Get
+            Started</a>
+        <a href="#learnMore"
+            class="bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 py-2 px-6 rounded-full text-lg font-semibold">Learn
+            More</a>
+    </div>
+</section>
 
-</html>
+<!-- Features Section -->
+<section class="bg-gray-800 text-white py-12">
+    <div class="max-w-6xl mx-auto text-center">
+        <h2 class="text-3xl font-extrabold mb-6">How Curishot Helps Students</h2>
+        <p class="text-lg mb-12">Curishot makes it easy to share important lab screenshots, code files, and other
+            documents directly from your PC to the cloud. Here’s how it works:</p>
+
+        <div class="grid md:grid-cols-3 gap-12">
+            <div class="flex flex-col items-center">
+                <div class="bg-blue-600 text-white p-6 rounded-full mb-4">
+                    <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Upload Files</h3>
+                <p>Quickly upload screenshots, code files, and other important documents directly from your lab PC to
+                    Pinata Cloud.</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="bg-green-600 text-white p-6 rounded-full mb-4">
+                    <i class="fas fa-share-alt fa-2x"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Share with Peers</h3>
+                <p>Instantly generate a link to share your files with your classmates, professors, or anyone else,
+                    without hassle.</p>
+            </div>
+            <div class="flex flex-col items-center">
+                <div class="bg-yellow-600 text-white p-6 rounded-full mb-4">
+                    <i class="fas fa-cloud fa-2x"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Access Anytime</h3>
+                <p>Access your files from anywhere, anytime, using any device. No need for USB drives or external
+                    storage.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Section -->
+<footer class="bg-gray-900 text-white py-8">
+    <div class="max-w-6xl mx-auto text-center">
+        <p class="text-sm">&copy; 2024 Curishot. All rights reserved.</p>
+        <div class="mt-4">
+            <a href="#terms" class="text-gray-400 hover:text-white mx-2">Terms of Service</a>
+            <a href="#privacy" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a>
+        </div>
+    </div>
+</footer>
+{% endblock %}

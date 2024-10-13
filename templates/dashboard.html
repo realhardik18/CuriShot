@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-    <h2 class="text-2xl font-bold mb-6">Hello {{ username }}</h2>
+    <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
 
     <!-- Row with 3 Options -->
     <div class="flex justify-between mb-6">
@@ -40,7 +40,7 @@
             </div>
 
             <button type="submit" id="submitButton"
-                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded mt-4">
+                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded mt-4">
                 Upload
             </button>
         </form>
@@ -72,7 +72,7 @@
                         <td class="px-4 py-2">
                             <a href="https://gateway.pinata.cloud/ipfs/{{ file['ipfs_hash'] }}"
                                 class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500" download>Download</a>
-                            <form action="/delete-tag/{{ file['_id'] }}" method="POST" class="inline-block ml-2">
+                            <form action="/delete/{{ file['_id'] }}" method="POST" class="inline-block ml-2">
                                 <button type="submit"
                                     class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500">Delete</button>
                             </form>
@@ -86,18 +86,16 @@
 
     <!-- Edit/New Tags Section (Initially Hidden) -->
     <div id="tagsSection" class="hidden mb-8">
-        <h3 class="text-xl font-semibold mb-4">Edit Tags / Add New Tags</h3>
+        <h3 class="text-xl font-semibold mb-4">Add New / Delete Tags</h3>
         <!-- Form to add a new tag -->
         <form id="newTagForm" action="/dashboard" method="POST" class="space-y-4">
             <input type="text" name="new_tag" placeholder="New Tag Name"
                 class="block w-full text-gray-300 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <input type="color" name="tag_color"
-                class="block w-full text-gray-300 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-600 transition duration-200 ease-in-out"
-                style="box-shadow: inset 0px 0px 0px 3px rgba(0, 149, 255, 0.6);" />
-
+                class="block w-full text-gray-300 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
 
             <button type="submit"
-                class="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-2 rounded mt-4">Add
+                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded mt-4">Add
                 Tag</button>
         </form>
         <div class="mt-4">
