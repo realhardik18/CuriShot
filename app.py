@@ -5,12 +5,13 @@ from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import requests
 #from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
 import bson
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-#app.config['MONGO_URI'] = MONGO_URI
+app.config['MONGO_URI'] = MONGO_URI
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 PINATA_UNPIN_URL = 'https://api.pinata.cloud/pinning/unpin/'
 
@@ -34,20 +35,30 @@ def unpin_file_from_pinata(ipfs_hash):
     else:
         print(f"Failed to unpin file {ipfs_hash}: {response.text}")
 
-def upload_to_pinata(filepath):
-    url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
+def upload_to_pinata(file):
+    # Pinata API details
+    pinata_api_url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
     headers = {
         #'pinata_api_key': PINATA_API_KEY,
         #'pinata_secret_api_key': PINATA_SECRET_API_KEY
         'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
         'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
-    with open(filepath, "rb") as file:
-        files = {
-            'file': file,
-        }
-        response = requests.post(url, files=files, headers=headers)
-        return response.json() if response.status_code == 200 else None
+
+    # Use a multipart form-data request to upload the file directly
+    files = {
+        'file': (file.filename, file.stream, file.content_type)
+    }
+    
+    try:
+        response = requests.post(pinata_api_url, headers=headers, files=files)
+        response.raise_for_status()  # Will raise an HTTPError if the response code is 4xx/5xx
+        # If successful, get the IPFS hash of the uploaded file
+        ipfs_hash = response.json().get('IpfsHash')
+        return ipfs_hash
+    except requests.exceptions.RequestException as e:
+        print(f"Error uploading to Pinata: {e}")
+        return None
 
 @app.route('/')
 def home():
@@ -117,29 +128,27 @@ def dashboard():
                     flash('Tag added successfully!', 'success')
 
             # Handle file upload and tag selection
-            if 'file' in request.files and request.files['file']:                
+            if 'file' in request.files and request.files['file']:
                 file = request.files['file']
-                filename = secure_filename(file.filename)
-                filepath = os.path.join("uploads", filename)
-                file.save(filepath)
+                
+                # Upload file to Pinata directly
+                ipfs_hash = upload_to_pinata(file)
 
-                # Upload file to Pinata (implement Pinata API logic here)
-                ipfs_hash = upload_to_pinata(filepath)
-
-                # Store file and selected tags in the database
-                selected_tags = request.form.getlist('tags')
-                file_data = {
-                    'username': username,
-                    'filename': filename,
-                    'ipfs_hash': ipfs_hash,
-                    'created_at': datetime.utcnow(),
-                    'tags': [{'name': tag, 'color': get_tag_color(username, tag)} for tag in selected_tags]
-                }
-                mongo.db.files.insert_one(file_data)
-
-                # Delete file from local storage
-                os.remove(filepath)
-                flash('File uploaded succsessfully!','succsess')
+                if ipfs_hash:
+                    # Store file and selected tags in the database
+                    selected_tags = request.form.getlist('tags')
+                    file_data = {
+                        'username': username,
+                        'filename': file.filename,
+                        'ipfs_hash': ipfs_hash,
+                        'created_at': datetime.utcnow(),
+                        'tags': [{'name': tag, 'color': get_tag_color(username, tag)} for tag in selected_tags]
+                    }
+                    mongo.db.files.insert_one(file_data)
+                    flash('File uploaded successfully!', 'success')
+                else:
+                    flash('Error uploading file!', 'error')
+                
                 return redirect(url_for('dashboard'))
 
         # Fetch user's tags from MongoDB
@@ -149,6 +158,7 @@ def dashboard():
         return render_template('dashboard.html', username=username, files=files, tags=user_tags)
     else:
         return redirect(url_for('login'))
+
 
 # Route to delete tags
 @app.route('/delete-tag/<tag_id>', methods=['POST'])
@@ -212,7 +222,4 @@ def delete_file(file_id):
 
 
 if __name__ == '__main__':
-    if not os.path.exists('uploads'):
-        os.makedirs('uploads')
-    print(os.listdir())
     app.run(debug=True)
