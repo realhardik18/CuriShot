@@ -5,12 +5,13 @@ from flask_pymongo import PyMongo
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
+#from creds import PINATA_API_KEY,MONGO_URI,PINATA_SECRET_API_KEY
 import bson
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-app.config['MONGO_URI'] = MONGO_URI
+#app.config['MONGO_URI'] = MONGO_URI
+app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 PINATA_UNPIN_URL = 'https://api.pinata.cloud/pinning/unpin/'
 
 try:
@@ -21,8 +22,10 @@ except Exception as e:
 def unpin_file_from_pinata(ipfs_hash):
     # Set the headers with the Pinata API key and secret
     headers = {
-        'pinata_api_key': PINATA_API_KEY,
-        'pinata_secret_api_key': PINATA_SECRET_API_KEY
+        #'pinata_api_key': PINATA_API_KEY,
+        #'pinata_secret_api_key': PINATA_SECRET_API_KEY
+        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
+        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
     
     # Make the unpin request
@@ -36,8 +39,10 @@ def unpin_file_from_pinata(ipfs_hash):
 def upload_to_pinata(filepath):
     url = "https://api.pinata.cloud/pinning/pinFileToIPFS"
     headers = {
-        "pinata_api_key": PINATA_API_KEY,
-        "pinata_secret_api_key": PINATA_SECRET_API_KEY,
+        #'pinata_api_key': PINATA_API_KEY,
+        #'pinata_secret_api_key': PINATA_SECRET_API_KEY
+        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
+        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
     with open(filepath, "rb") as file:
         files = {
