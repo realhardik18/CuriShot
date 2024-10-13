@@ -23,7 +23,7 @@ def unpin_file_from_pinata(ipfs_hash):
     headers = {
         #'pinata_api_key': PINATA_API_KEY,
         #'pinata_secret_api_key': PINATA_SECRET_API_KEY
-        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
+        'pinata_api_key': os.getenv('PINATA_API_KEY'),
         'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
     
@@ -41,7 +41,7 @@ def upload_to_pinata(file):
     headers = {
         #'pinata_api_key': PINATA_API_KEY,
         #'pinata_secret_api_key': PINATA_SECRET_API_KEY
-        'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY'),
+        'pinata_api_key': os.getenv('PINATA_API_KEY'),
         'pinata_secret_api_key': os.getenv('PINATA_SECRET_API_KEY')
     }
 
