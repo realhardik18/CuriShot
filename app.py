@@ -46,6 +46,10 @@ def upload_to_pinata(filepath):
         response = requests.post(url, files=files, headers=headers)
         return response.json() if response.status_code == 200 else None
 
+@app.route('/')
+def home():
+    return render_template('home.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -73,7 +77,8 @@ def register():
         password = request.form['password']
 
         if users.find_one({'username': username}):
-            return 'Username already exists!'
+            flash('Username already exists!','danger')
+            return redirect(url_for('register'))
 
         hashed_password = generate_password_hash(password)
         users.insert_one({
@@ -178,8 +183,7 @@ def delete_file(file_id):
     # Fetch file from the database using file_id
     file_data = mongo.db.files.find_one({"_id": bson.ObjectId(file_id)})
     
-    if file_data:
-        print('HELLLLLLLLLLLLO')
+    if file_data:        
         # Get the Pinata IPFS hash of the file
         ipfs_hash = file_data.get('ipfs_hash')
         ipfs_hash=str(ipfs_hash['IpfsHash'])
